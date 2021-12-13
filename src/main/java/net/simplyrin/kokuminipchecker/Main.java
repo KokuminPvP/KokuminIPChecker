@@ -159,7 +159,7 @@ public class Main {
 				|| ip.startsWith("MSI")
 				|| ip.startsWith("DESKTOP-")
 				|| ip.startsWith("LAPTOP-")) {
-			return new RequestData(null, false);
+			return this.getNullData();
 		}
 
 		if (this.data != null && this.data.getString(ip + ".JSON", null) != null) {
@@ -176,7 +176,7 @@ public class Main {
 		}
 		if (this.queued.contains(ip)) {
 			System.out.println("[READY] Query: " + ip);
-			return new RequestData(null, false);
+			return this.getNullData();
 		}
 		this.queued.add(ip);
 		this.rateService.execute(() -> {
@@ -224,6 +224,10 @@ public class Main {
 			} catch (Exception e) {
 			}
 		});
+		return this.getNullData();
+	}
+
+	private RequestData getNullData() {
 		return new RequestData(null, false);
 	}
 
