@@ -49,6 +49,10 @@ public class RequestTask extends HttpServlet {
 		response.addHeader("Access-Control-Allow-Origin", "*");
 		response.addHeader("Access-Control-Allow-Headers", "Content-Type");
 		response.setContentType("application/json; charset=UTF-8");
+		
+		if (request.getQueryString() == null || request.getQueryString().length() <= 4) {
+			return;
+		}
 
 		PrintWriter printWriter = response.getWriter();
 		JsonObject jsonObject = new JsonObject();

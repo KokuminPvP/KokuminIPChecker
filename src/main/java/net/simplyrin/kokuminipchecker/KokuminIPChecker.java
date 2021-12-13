@@ -79,9 +79,14 @@ public class KokuminIPChecker {
 	private List<String> queued = new ArrayList<>();
 
 	public void run() {
-		new RinStream();
+		RinStream rinStream = new RinStream();
+		rinStream.setPrefix("yyyy/MM/dd (E) HH:mm:ss");
+		rinStream.enableError();
+		rinStream.setSaveLog(true);
+		rinStream.setEnableColor(true);
+		rinStream.setEnableTranslateColor(true);
 
-		System.out.println("準備中...");
+		System.out.println("§8準備中...");
 
 		File file = new File("config.yaml");
 		if (!file.exists()) {
@@ -115,7 +120,7 @@ public class KokuminIPChecker {
 			}
 		});
 
-		System.out.println("サーバーの準備をしています...");
+		System.out.println("§8サーバーの準備をしています...");
 
 		this.receiveCommand();
 		this.startServer();;
@@ -158,9 +163,9 @@ public class KokuminIPChecker {
 		try {
 			int port = serverConnector.getPort();
 			
-			System.out.println("localhost:" + port + "/request でリクエストの待受を開始します。");
+			System.out.println("§8localhost:" + port + "/request でリクエストの待受を開始します。");
 			server.start();
-			System.out.println("localhost:" + port + "/request でリクエストの待受を開始しました。");
+			System.out.println("§alocalhost:" + port + "/request でリクエストの待受を開始しました。");
 			server.join();
 		} catch (Exception e) {
 			e.printStackTrace();
