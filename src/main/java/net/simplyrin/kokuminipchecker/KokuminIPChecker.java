@@ -10,6 +10,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -31,8 +32,8 @@ import com.google.gson.JsonParser;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.md_5.bungee.config.Configuration;
 import net.simplyrin.config.Config;
+import net.simplyrin.config.Configuration;
 import net.simplyrin.kokuminipchecker.servlet.RequestTask;
 import net.simplyrin.rinstream.RinStream;
 
@@ -60,10 +61,10 @@ import net.simplyrin.rinstream.RinStream;
  * SOFTWARE.
  */
 @Getter
-public class Main {
+public class KokuminIPChecker {
 
 	public static void main(String[] args) {
-		new Main().run();
+		new KokuminIPChecker().run();
 	}
 
 	private Gson gson = new Gson();
@@ -116,6 +117,25 @@ public class Main {
 
 		System.out.println("サーバーの準備をしています...");
 
+		this.receiveCommand();
+		this.startServer();;
+	}
+	
+	public void receiveCommand() {
+		new Thread(() -> {
+			Scanner scanner = new Scanner(System.in);
+			
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				
+				if (line.equalsIgnoreCase("stop")) {
+					System.exit(0);
+				}
+			}
+		}).start();;
+	}
+	
+	public void startServer() {
 		ServletContextHandler servletHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
 
 		servletHandler.setMaxFormContentSize(1024 * 1024 * 1024);
@@ -134,12 +154,14 @@ public class Main {
 		ServerConnector serverConnector = new ServerConnector(server, httpConnectionFactory);
 		serverConnector.setPort(53185);
 		server.setConnectors(new Connector[] { serverConnector });
-
+		
 		try {
-			System.out.println("/request でリクエストの待受を開始します。");
+			int port = serverConnector.getPort();
+			
+			System.out.println("localhost:" + port + "/request でリクエストの待受を開始します。");
 			server.start();
+			System.out.println("localhost:" + port + "/request でリクエストの待受を開始しました。");
 			server.join();
-			System.out.println("/request でリクエストの待受を開始しました。");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

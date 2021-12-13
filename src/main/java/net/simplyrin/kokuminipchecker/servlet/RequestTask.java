@@ -4,18 +4,17 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import net.simplyrin.kokuminipchecker.Main;
-import net.simplyrin.kokuminipchecker.Main.RequestData;
+import net.simplyrin.kokuminipchecker.KokuminIPChecker;
+import net.simplyrin.kokuminipchecker.KokuminIPChecker.RequestData;
 
 /**
  * Created by SimplyRin on 2021/01/17.
@@ -43,7 +42,7 @@ import net.simplyrin.kokuminipchecker.Main.RequestData;
 @RequiredArgsConstructor
 public class RequestTask extends HttpServlet {
 
-	private final Main instance;
+	private final KokuminIPChecker instance;
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
