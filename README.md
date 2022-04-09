@@ -30,3 +30,26 @@ IP リストを HTTP 経由で投げると1分以内に情報を拾ってきて�
     ]
 }
 ```
+
+# Maven
+- Repository
+```XML
+  <repositories>
+    <repository>
+      <id>net.simplyrin</id>
+      <name>api</name>
+      <url>https://api.simplyrin.net/maven/</url>
+    </repository>
+  </repositories>
+```
+
+- Dependency
+```XML
+  <dependencies>
+    <dependency>
+      <groupId>net.simplyrin.kokuminipchecker</groupId>
+      <artifactId>KokuminIPChecker</artifactId>
+      <version>1.2</version>
+    </dependency>
+  </dependencies>
+```
