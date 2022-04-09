@@ -32,6 +32,7 @@ import com.google.gson.JsonParser;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import net.simplyrin.config.Config;
 import net.simplyrin.config.Configuration;
 import net.simplyrin.kokuminipchecker.servlet.RequestTask;
@@ -77,6 +78,9 @@ public class KokuminIPChecker {
 	private ExecutorService fetchService = Executors.newFixedThreadPool(128);
 
 	private List<String> queued = new ArrayList<>();
+	
+	@Setter
+	private boolean printDebug = false;
 
 	public void run() {
 		RinStream rinStream = new RinStream();
@@ -88,6 +92,17 @@ public class KokuminIPChecker {
 
 		System.out.println("§8準備中...");
 
+		this.startWithNoServer();
+		
+		this.printDebug = true;
+
+		System.out.println("§8サーバーの準備をしています...");
+
+		this.receiveCommand();
+		this.startServer();
+	}
+	
+	public void startWithNoServer() {
 		File file = new File("config.yaml");
 		if (!file.exists()) {
 			try {
@@ -101,7 +116,6 @@ public class KokuminIPChecker {
 			Config.saveConfig(config, file);
 		}
 		this.config = Config.getConfig(file);
-
 
 		File dataFile = new File("data.yaml");
 		if (!dataFile.exists()) {
@@ -119,11 +133,6 @@ public class KokuminIPChecker {
 				Config.saveConfig(data, dataFile);
 			}
 		});
-
-		System.out.println("§8サーバーの準備をしています...");
-
-		this.receiveCommand();
-		this.startServer();;
 	}
 	
 	public void receiveCommand() {
@@ -137,7 +146,7 @@ public class KokuminIPChecker {
 					System.exit(0);
 				}
 			}
-		}).start();;
+		}).start();
 	}
 	
 	public void startServer() {
@@ -198,11 +207,11 @@ public class KokuminIPChecker {
 				JsonElement json = JsonParser.parseString(this.data.getString(ip + ".JSON"));
 				return new RequestData(this.gson.fromJson(json, IpData.class), true);
 			} else {
-				System.out.println("[CACHE EXPIRES] " + ip);
+				this.println("[CACHE EXPIRES] " + ip);
 			}
 		}
 		if (this.queued.contains(ip)) {
-			System.out.println("[READY] Query: " + ip);
+			this.println("[READY] Query: " + ip);
 			return this.getNullData();
 		}
 		this.queued.add(ip);
@@ -211,14 +220,14 @@ public class KokuminIPChecker {
 		    int first = rand.nextInt(15);
 		    int end = 60 - first;
 		    try {
-		    	System.out.println("[SLEEP] " + first + "s, Query: " + ip);
+		    	this.println("[SLEEP] " + first + "s, Query: " + ip);
 		    	TimeUnit.SECONDS.sleep(first);
 		    } catch (Exception e) {
 		    }
 
 			this.fetchService.execute(() -> {
 				try {
-					System.out.println("[GET] Query: " + ip);
+					this.println("[GET] Query: " + ip);
 					HttpURLConnection connection = (HttpURLConnection) new URL("http://ip-api.com/json/" + ip + "?fields=66846719").openConnection();
 					String result = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
 					JsonElement json = JsonParser.parseString(result);
@@ -233,7 +242,7 @@ public class KokuminIPChecker {
 						this.data.set(ip + ".EXPIRES", calendar.getTime().getTime());
 
 						IpData data = this.gson.fromJson(json, IpData.class);
-						System.out.println("[DONE] Query: " + ip
+						this.println("[DONE] Query: " + ip
 								+ ", isMobile: " + data.getMobile()
 								+ ", isProxy: " + data.getProxy()
 								+ ", isHosting: " + data.getHosting());
@@ -252,6 +261,14 @@ public class KokuminIPChecker {
 			}
 		});
 		return this.getNullData();
+	}
+	
+	public void println(String message) {
+		if (!this.printDebug) {
+			return;
+		}
+		
+		System.out.println(message);
 	}
 
 	private RequestData getNullData() {
